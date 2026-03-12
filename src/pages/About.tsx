@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 export default function About() {
   return (
-    <div className="w-full flex flex-col gap-8">
+    <div className="w-full min-h-screen flex flex-col items-center px-4 py-12">
 
       {/* Header */}
       <div className="mb-12 text-center">
@@ -11,7 +11,7 @@ export default function About() {
         <p className="text-stone-400 mt-2 text-lg">How it works and why it exists</p>
       </div>
 
-      <div className="w-full flex flex-col gap-8">
+      <div className="w-full max-w-4xl flex flex-col gap-8">
 
         {/* What is it */}
         <div className="bg-stone-900 border border-stone-700 rounded-2xl p-8">

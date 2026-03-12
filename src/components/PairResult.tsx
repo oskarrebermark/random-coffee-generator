@@ -10,7 +10,7 @@ export default function PairResult({ pairs, oddParticipant, onRegenerate }: Prop
   if (pairs.length === 0) return null
 
   return (
-    <div className="w-full max-w-lg mt-12">
+    <div className="w-full max-w-2xl lg:max-w-4xl">
       <h2 className="text-xl font-semibold text-amber-400 mb-6 text-center">
         ☕ This Round's Pairs
       </h2>

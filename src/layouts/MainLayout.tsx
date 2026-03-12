@@ -24,7 +24,7 @@ export default function MainLayout() {
 
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100">
+    <div className="w-full min-h-screen flex flex-col items-center">
 
         {/* Navigation — always visible on all pages */}
         <div className="w-full flex justify-center px-4 py-6">
@@ -52,7 +52,7 @@ export default function MainLayout() {
         </div>
 
         {/* Page content here */}
-            <div className="w-full mt-12 max-w-2xl flex flex-col items-center px-4 pb-16">
+        <div className="w-full flex-1 flex flex-col items-center">
             <Routes>
                 <Route path="/" element={<Home user={user} />} />
                 <Route path="/about" element={<About />} />

@@ -8,6 +8,7 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
+  width: 100%;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -26,13 +27,13 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
   justify-content: center;
   align-items: flex-start;
   min-width: 320px;
   min-height: 100vh;
   background-color: #0c0a09; /* stone-950 */
-
+  width: 100%;
+  align-items: flex-start;
 }
 
 

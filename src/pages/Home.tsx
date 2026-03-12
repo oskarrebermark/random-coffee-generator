@@ -68,7 +68,7 @@ export default function Home({ user }: Props) {
   ]
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-4 py-12">
+    <div className="w-full min-h-screen text-stone-100 flex flex-col items-center px-4 py-12">
       {/* Hero */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-2">Random Coffee</h1>
@@ -76,7 +76,7 @@ export default function Home({ user }: Props) {
       </div>
 
       {/* Browser-style tab container */}
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-4xl">
         {/* Tab bar */}
         <div className="flex gap-1 bg-stone-800 rounded-t-xl px-3 pt-3">
           {tabs.map(tab => (
@@ -98,7 +98,7 @@ export default function Home({ user }: Props) {
         </div>
 
         {/* Tab content panel */}
-        <div className="bg-stone-900 rounded-b-xl rounded-tr-xl p-6 shadow-lg">
+        <div className="w-full max-w-4xl lg:max-w-4xl mx-auto bg-stone-900 rounded-b-xl rounded-tr-xl p-6 shadow-lg">
 
           {/* Upload Tab */}
           {activeTab === 'upload' && (
@@ -133,17 +133,17 @@ export default function Home({ user }: Props) {
                 ? <p className="text-stone-400 text-sm">No history yet.</p>
                 : history.map((round, index) => (
                   <div key={round.id} className="bg-stone-800 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-amber-400 mb-2">
+                    <p className="text-sm text-center font-semibold text-amber-400 mb-2">
                       Round {history.length - index} — {round.date.toDate().toLocaleDateString('sv-SE', {
                         year: 'numeric', month: 'long', day: 'numeric'
                       })}
                     </p>
                     <div className="flex flex-col gap-1">
                       {round.pairs.map((pair, i) => (
-                        <div key={i} className="flex items-center gap-2 text-sm text-stone-300">
-                          <span>{pair.person1.name}</span>
+                        <div key={i} className="flex items-center justify-between gap-4 text-sm text-stone-300 px-4 py-1">
+                          <span className="flex-1 text-right">{pair.person1.name}</span>
                           <span className="text-stone-500">☕</span>
-                          <span>{pair.person2.name}</span>
+                          <span className="flex-1 text-left">{pair.person2.name}</span>
                         </div>
                       ))}
                     </div>
