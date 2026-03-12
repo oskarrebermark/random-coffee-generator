@@ -7,6 +7,7 @@ import PillNav from '../components/PillNav'
 import About from '../pages/About'
 import Home from '../pages/Home'
 import coffeebean from '../assets/coffebean.svg'
+import { LogIn, LogOut} from 'lucide-react'
 
 export default function MainLayout() {
   const [user, setUser] = useState<User | null>(null)
@@ -35,6 +36,7 @@ export default function MainLayout() {
             { label: 'About', href: '/about' },
             {
                 label: user ? 'Sign Out' : 'Login',
+                icon: user ? <LogOut size={16} /> : <LogIn size={16} />,
                 variant: user ? 'danger' : 'white',
                 onClick: user ? handleLogout : handleLogin
             }

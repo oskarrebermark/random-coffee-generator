@@ -8,6 +8,7 @@ export type PillNavItem = {
   ariaLabel?: string;
   onClick?: () => void;
   variant?: 'default' | 'danger' | 'ghost' | 'white';
+  icon?: React.ReactNode
 };
 
 export interface PillNavProps {
@@ -346,31 +347,29 @@ const PillNav: React.FC<PillNavProps> = ({
                 <>
                   <span
                     className="hover-circle absolute left-1/2 bottom-0 rounded-full z-[1] block pointer-events-none"
-                    style={{
-                      background: 'var(--base, #000)',
-                      willChange: 'transform'
-                    }}
+                    style={{ background: 'var(--base, #000)', willChange: 'transform' }}
                     aria-hidden="true"
-                    ref={el => {
-                      circleRefs.current[i] = el;
-                    }}
+                    ref={el => { circleRefs.current[i] = el; }}
                   />
                   <span className="label-stack relative inline-block leading-[1] z-[2]">
                     <span
                       className="pill-label relative z-[2] inline-block leading-[1]"
                       style={{ willChange: 'transform' }}
                     >
-                      {item.label}
+                      <span className="inline-flex items-center gap-1.5">
+                        {item.icon && <span className="shrink-0 flex items-center">{item.icon}</span>}
+                        {item.label}
+                      </span>
                     </span>
                     <span
                       className="pill-label-hover absolute left-0 top-0 z-[3] inline-block"
-                      style={{
-                        color: 'var(--hover-text, #fff)',
-                        willChange: 'transform, opacity'
-                      }}
+                      style={{ color: 'var(--hover-text, #fff)', willChange: 'transform, opacity' }}
                       aria-hidden="true"
                     >
-                      {item.label}
+                      <span className="inline-flex items-center gap-1.5">
+                        {item.icon && <span className="shrink-0 flex items-center">{item.icon}</span>}
+                        {item.label}
+                      </span>
                     </span>
                   </span>
                   {isActive && (
@@ -382,6 +381,7 @@ const PillNav: React.FC<PillNavProps> = ({
                   )}
                 </>
               );
+
 
               const basePillClasses =
                 'relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[16px] leading-[0] uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-0';
