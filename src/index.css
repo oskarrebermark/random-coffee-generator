@@ -27,10 +27,14 @@ a:hover {
 body {
   margin: 0;
   display: flex;
+  justify-content: center;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #0c0a09; /* stone-950 */
+
 }
+
 
 h1 {
   font-size: 3.2em;
@@ -61,6 +65,10 @@ nav button[role="menuitem"] {
   border-radius: 9999px !important;
   border: none !important;
 }
+nav img {
+  filter: brightness(0) invert(1); /* makes it white */
+}
+
 
 
 @media (prefers-color-scheme: light) {
