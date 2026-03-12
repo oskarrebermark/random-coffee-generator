@@ -2,7 +2,9 @@ import { useState } from 'react'
 import type { User } from 'firebase/auth'
 import type { Participant } from '../utils/parseCSV'
 import type { Pair } from '../utils/matchmaker'
-import { generatePairs } from '../utils/matchmaker'
+import { generatePairs, extractPairKeys } from '../utils/matchmaker'
+import { saveRound, loadHistory, getPastPairKeys } from '../utils/firestoreHelpers.ts'
+import type { PairingRound } from '../utils/firestoreHelpers.ts'
 import FileUpload from '../components/FileUpload'
 import ParticipantList from '../components/ParticipantList'
 import PairResult from '../components/PairResult'
@@ -16,20 +18,45 @@ export default function Home({ user }: Props) {
   const [pairs, setPairs] = useState<Pair[]>([])
   const [fileName, setFileName] = useState<string>('')
   const [error, setError] = useState<string>('')
+  const [history, setHistory] = useState<PairingRound[]>([])
+  const [saving, setSaving] = useState(false)
 
   const handleParsed = (data: Participant[]) => {
     setParticipants(data)
     setPairs([])
     setError('')
+
+    // Load history when file is uploaded and user is signed in
+    if (user) {
+      loadHistory(user.uid).then(setHistory).catch(console.error)
+    }
   }
 
-  const handleGenerate = () => {
-    if (participants.length < 2) return
-    setPairs(generatePairs(participants))
+  const handleGenerate = async () => {
+    if (participants.length < 2 || !user) return
+
+    setSaving(true)
+    try {
+      const pastKeys = await getPastPairKeys(user.uid)
+      const newPairs = generatePairs(participants, pastKeys)
+      const pairKeys = extractPairKeys(newPairs)
+
+      await saveRound(user.uid, newPairs, pairKeys)
+
+      setPairs(newPairs)
+      const updated = await loadHistory(user.uid)
+      setHistory(updated)
+    } catch (e) {
+      setError('Failed to save pairings. Please try again.')
+      console.error(e)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
-    <div className="max-w-lg mx-auto flex flex-col items-center">
+    <div className="w-full max-w-lg flex flex-col items-center">
+
       {/* Hero */}
       <div className="mb-12 text-center">
         <span className="text-5xl">☕</span>
@@ -40,7 +67,7 @@ export default function Home({ user }: Props) {
       </div>
 
       {/* Upload Card */}
-      <div className="w-full max-w-lg bg-stone-900 border border-stone-700 rounded-2xl p-8 shadow-xl">
+      <div className="w-full bg-stone-900 border border-stone-700 rounded-2xl p-8 shadow-xl">
         <FileUpload
           onParsed={handleParsed}
           onError={setError}
@@ -58,19 +85,55 @@ export default function Home({ user }: Props) {
 
         <button
           onClick={handleGenerate}
-          disabled={participants.length < 2 || !user}
+          disabled={participants.length < 2 || !user || saving}
           className="mt-6 w-full bg-amber-500 hover:bg-amber-400 disabled:bg-stone-700 disabled:text-stone-500 disabled:cursor-not-allowed text-stone-950 font-semibold py-3 rounded-xl transition-all"
         >
-          {!user ? 'Sign in to Generate Pairs' : 'Generate Coffee Pairs ☕'}
+          {saving ? 'Saving...' : !user ? 'Sign in to Generate Pairs' : 'Generate Coffee Pairs ☕'}
         </button>
       </div>
 
-      {/* Results */}
+      {/* Current round results */}
       <PairResult
         pairs={pairs}
         oddParticipant={participants.length % 2 !== 0}
         onRegenerate={handleGenerate}
       />
+
+      {/* Pairing history */}
+      {history.length > 0 && (
+        <div className="w-full mt-12">
+          <h2 className="text-xl font-semibold text-amber-400 mb-4 text-center">
+            📋 Past Rounds
+          </h2>
+          <div className="flex flex-col gap-4">
+            {history.map((round, index) => (
+              <div
+                key={round.id}
+                className="bg-stone-900 border border-stone-700 rounded-2xl p-6"
+              >
+                <p className="text-sm text-stone-400 mb-3">
+                  Round {history.length - index} —{' '}
+                  {round.date.toDate().toLocaleDateString('sv-SE', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+                <div className="flex flex-col gap-2">
+                  {round.pairs.map((pair, i) => (
+                    <div key={i} className="flex items-center justify-between text-sm">
+                      <span className="text-stone-200">{pair.person1.name}</span>
+                      <span className="text-amber-400 mx-2">☕</span>
+                      <span className="text-stone-200">{pair.person2.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
