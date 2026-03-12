@@ -4,8 +4,9 @@ import { gsap } from 'gsap';
 
 export type PillNavItem = {
   label: string;
-  href: string;
+  href?: string;
   ariaLabel?: string;
+  onClick?: () => void;
 };
 
 export interface PillNavProps {
@@ -35,7 +36,7 @@ const PillNav: React.FC<PillNavProps> = ({
   hoveredPillTextColor = '#060010',
   pillTextColor,
   onMobileMenuClick,
-  initialLoadAnimation = true
+  initialLoadAnimation = true,
 }) => {
   const resolvedPillTextColor = pillTextColor ?? baseColor;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -255,7 +256,7 @@ const PillNav: React.FC<PillNavProps> = ({
       >
         {isRouterLink(items?.[0]?.href) ? (
           <Link
-            to={items[0].href}
+            to={items[0].href!}
             aria-label="Home"
             onMouseEnter={handleLogoEnter}
             role="menuitem"
@@ -358,11 +359,23 @@ const PillNav: React.FC<PillNavProps> = ({
                 'relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[16px] leading-[0] uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-0';
 
               return (
-                <li key={item.href} role="none" className="flex h-full">
-                  {isRouterLink(item.href) ? (
+                <li key={item.label} role="none" className="flex h-full">
+                  {item.onClick ? (
+                    <button
+                      role="menuitem"
+                      onClick={item.onClick}
+                      className={basePillClasses + ' border-0'}
+                      style={pillStyle}
+                      aria-label={item.ariaLabel || item.label}
+                      onMouseEnter={() => handleEnter(i)}
+                      onMouseLeave={() => handleLeave(i)}
+                    >
+                      {PillContent}
+                    </button>
+                  ) : isRouterLink(item.href) ? (
                     <Link
                       role="menuitem"
-                      to={item.href}
+                      to={item.href!}
                       className={basePillClasses}
                       style={pillStyle}
                       aria-label={item.ariaLabel || item.label}
@@ -427,11 +440,11 @@ const PillNav: React.FC<PillNavProps> = ({
               background: 'var(--pill-bg, #fff)',
               color: 'var(--pill-text, #fff)'
             };
-            const hoverIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+            const hoverIn = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
               e.currentTarget.style.background = 'var(--base)';
               e.currentTarget.style.color = 'var(--hover-text, #fff)';
             };
-            const hoverOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
+            const hoverOut = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
               e.currentTarget.style.background = 'var(--pill-bg, #fff)';
               e.currentTarget.style.color = 'var(--pill-text, #fff)';
             };
@@ -440,10 +453,20 @@ const PillNav: React.FC<PillNavProps> = ({
               'block py-3 px-4 text-[16px] font-medium rounded-[50px] transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]';
 
             return (
-              <li key={item.href}>
-                {isRouterLink(item.href) ? (
+              <li key={item.label}>
+                {item.onClick ? (
+                  <button
+                    className={linkClasses + ' w-full text-left border-0 rounded-full'}
+                    style={defaultStyle}
+                    onMouseEnter={hoverIn}
+                    onMouseLeave={hoverOut}
+                    onClick={() => { item.onClick?.(); setIsMobileMenuOpen(false); }}
+                  >
+                    {item.label}
+                  </button>
+                ) : isRouterLink(item.href) ? (
                   <Link
-                    to={item.href}
+                    to={item.href!}
                     className={linkClasses}
                     style={defaultStyle}
                     onMouseEnter={hoverIn}

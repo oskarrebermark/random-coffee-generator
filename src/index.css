@@ -56,6 +56,13 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Force pill nav buttons to be fully rounded */
+nav button[role="menuitem"] {
+  border-radius: 9999px !important;
+  border: none !important;
+}
+
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
