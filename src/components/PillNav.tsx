@@ -7,6 +7,7 @@ export type PillNavItem = {
   href?: string;
   ariaLabel?: string;
   onClick?: () => void;
+  variant?: 'default' | 'danger' | 'ghost' | 'white';
 };
 
 export interface PillNavProps {
@@ -139,6 +140,20 @@ const PillNav: React.FC<PillNavProps> = ({
 
     return () => window.removeEventListener('resize', onResize);
   }, [items, ease, initialLoadAnimation]);
+
+  // Reset all hover animations when the active route changes
+  useEffect(() => {
+    tlRefs.current.forEach((tl, i) => {
+      if (!tl) return
+      activeTweenRefs.current[i]?.kill()
+      activeTweenRefs.current[i] = tl.tweenTo(0, {
+        duration: 0.2,
+        ease,
+        overwrite: 'auto'
+      })
+    })
+  }, [activeHref, ease])
+
 
   const handleEnter = (i: number) => {
     const tl = tlRefs.current[i];
@@ -308,10 +323,23 @@ const PillNav: React.FC<PillNavProps> = ({
               const isActive = activeHref === item.href;
 
               const pillStyle: React.CSSProperties = {
-                background: 'var(--pill-bg, #fff)',
-                color: 'var(--pill-text, var(--base, #000))',
+                background: item.variant === 'danger'
+                  ? '#ef4444'
+                  : item.variant === 'white'
+                  ? '#ffffff'
+                  : item.variant === 'ghost'
+                  ? 'transparent'
+                  : 'var(--pill-bg, #fff)',
+                color: item.variant === 'danger'
+                  ? '#fff'
+                  : item.variant === 'white'
+                  ? '#1c1917'
+                  : item.variant === 'ghost'
+                  ? 'var(--pill-text)'
+                  : 'var(--pill-text, var(--base, #000))',
                 paddingLeft: 'var(--pill-pad-x)',
-                paddingRight: 'var(--pill-pad-x)'
+                paddingRight: 'var(--pill-pad-x)',
+                border: item.variant === 'ghost' ? '1px solid var(--pill-bg)' : 'none'
               };
 
               const PillContent = (
@@ -359,7 +387,7 @@ const PillNav: React.FC<PillNavProps> = ({
                 'relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[16px] leading-[0] uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-0';
 
               return (
-                <li key={item.label} role="none" className="flex h-full">
+                <li key={item.label} role="none" className={`flex h-full ${i === items.length - 1 ? 'ml-3' : ''}`}>
                   {item.onClick ? (
                     <button
                       role="menuitem"

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth'
 import type { User } from 'firebase/auth'
@@ -19,6 +19,9 @@ export default function MainLayout() {
   const handleLogin = () => signInWithPopup(auth, googleProvider)
   const handleLogout = () => signOut(auth)
 
+  const location = useLocation()
+
+
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100">
 
@@ -28,14 +31,15 @@ export default function MainLayout() {
             logo={coffeebean}
             logoAlt="Random Coffee"
             items={[
-                { label: 'Home', href: '/' },
-                { label: 'About', href: '/about' },
-                {
+            { label: 'Home', href: '/' },
+            { label: 'About', href: '/about' },
+            {
                 label: user ? 'Sign Out' : 'Login',
+                variant: user ? 'danger' : 'white',
                 onClick: user ? handleLogout : handleLogin
-                }
+            }
             ]}
-            activeHref="/"
+            activeHref={location.pathname}
             baseColor="#1c1917"
             pillColor="#f59e0b"
             hoveredPillTextColor="#f59e0b"
@@ -46,7 +50,7 @@ export default function MainLayout() {
         </div>
 
         {/* Page content here */}
-            <div className="flex flex-col items-center px-4 pb-16">
+            <div className="w-full mt-12 max-w-2xl flex flex-col items-center px-4 pb-16">
             <Routes>
                 <Route path="/" element={<Home user={user} />} />
                 <Route path="/about" element={<About />} />

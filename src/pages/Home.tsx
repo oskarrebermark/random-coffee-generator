@@ -55,7 +55,7 @@ export default function Home({ user }: Props) {
   }
 
   return (
-    <div className="w-full max-w-lg flex flex-col items-center">
+    <div className="w-full flex flex-col items-center">
 
       {/* Hero */}
       <div className="mb-12 text-center">
