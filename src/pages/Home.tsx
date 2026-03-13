@@ -32,6 +32,13 @@ export default function Home({ user }: Props) {
     loadHistory(user.uid).then(setHistory).catch(console.error)
   }, [user])
 
+  useEffect(() => {
+    if (!user && activeTab !== 'upload') {
+      setActiveTab('upload') 
+    }
+  }, [user])
+
+
   const handleParsed = (data: Participant[]) => {
     setParticipants(data)
     setPairs([])
@@ -62,15 +69,16 @@ export default function Home({ user }: Props) {
   const [oddParticipant, setOddParticipant] = useState<boolean>(false)
 
   const tabs: { id: Tab; label: string; disabled?: boolean }[] = [
-    { id: 'upload', label: '📂 Upload' },
+    { id: 'upload', label: '📂 Upload', disabled: !user  },
     { id: 'round', label: '☕ This Round', disabled: pairs.length === 0 },
     { id: 'history', label: '📋 History', disabled: history.length === 0 },
   ]
 
   return (
-    <div className="w-full min-h-screen text-stone-100 flex flex-col items-center px-4 py-12">
+    <div className="w-full min-h-screen text-amber-400 flex flex-col items-center px-4 py-12">
       {/* Hero */}
       <div className="text-center mb-8">
+        <span className="text-5xl">☕</span>
         <h1 className="text-4xl font-bold mb-2">Random Coffee</h1>
         <p className="text-stone-400">Upload your team list and generate coffee meetup pairs</p>
       </div>
@@ -88,7 +96,7 @@ export default function Home({ user }: Props) {
                 px-4 py-2 rounded-t-lg text-sm font-medium transition-colors
                 ${tab.disabled ? 'opacity-30 cursor-not-allowed text-stone-400' : 'cursor-pointer'}
                 ${activeTab === tab.id
-                  ? 'bg-stone-900 text-white'
+                  ? 'bg-stone-900 text-black'
                   : 'text-stone-400 hover:text-white hover:bg-stone-700'}
               `}
             >
@@ -98,23 +106,32 @@ export default function Home({ user }: Props) {
         </div>
 
         {/* Tab content panel */}
-        <div className="w-full max-w-4xl lg:max-w-4xl mx-auto bg-stone-900 rounded-b-xl rounded-tr-xl p-6 shadow-lg">
+        <div className="w-full max-w-4xl lg:max-w-4xl mx-auto bg-stone-900 rounded-b-xl p-6 shadow-lg">
 
           {/* Upload Tab */}
           {activeTab === 'upload' && (
             <div className="flex flex-col gap-4">
-              <FileUpload onParsed={handleParsed} onError={setError} fileName={fileName} setFileName={setFileName}/>
-              {participants.length > 0 && <ParticipantList participants={participants} />}
-              {error && <p className="text-red-400 text-sm">{error}</p>}
-              <button
-                onClick={handleGenerate}
-                disabled={saving || participants.length < 2 || !user}
-                className="mt-2 w-full py-3 rounded-full bg-amber-500 text-stone-900 font-bold text-sm uppercase tracking-wide disabled:opacity-40 hover:bg-amber-400 transition-colors"
-              >
-                {saving ? 'Saving...' : !user ? 'Sign in to Generate Pairs' : 'Generate Coffee Pairs ☕'}
-              </button>
+              {!user ? (
+                <p className="text-center text-stone-400 text-sm py-8">
+                  Please sign in to upload and generate pairs.
+                </p>
+              ) : (
+                <>
+                  <FileUpload onParsed={handleParsed} onError={setError} fileName={fileName} setFileName={setFileName} />
+                  {participants.length > 0 && <ParticipantList participants={participants} />}
+                  {error && <p className="text-red-400 text-sm">{error}</p>}
+                  <button
+                    onClick={handleGenerate}
+                    disabled={saving || participants.length < 2}
+                    className="mt-2 w-full py-3 rounded-full bg-amber-500 text-stone-900 font-bold text-sm uppercase tracking-wide disabled:opacity-40 hover:bg-amber-400 transition-colors"
+                  >
+                    {saving ? 'Saving...' : 'Generate Coffee Pairs ☕'}
+                  </button>
+                </>
+              )}
             </div>
           )}
+
 
           {/* This Round Tab */}
           {activeTab === 'round' && (
