@@ -111,27 +111,20 @@ export default function Home({ user }: Props) {
           {/* Upload Tab */}
           {activeTab === 'upload' && (
             <div className="flex flex-col gap-4">
-              {!user ? (
-                <p className="text-center text-stone-400 text-sm py-8">
-                  Please sign in to upload and generate pairs.
-                </p>
-              ) : (
-                <>
-                  <FileUpload onParsed={handleParsed} onError={setError} fileName={fileName} setFileName={setFileName} />
-                  {participants.length > 0 && <ParticipantList participants={participants} />}
-                  {error && <p className="text-red-400 text-sm">{error}</p>}
-                  <button
-                    onClick={handleGenerate}
-                    disabled={saving || participants.length < 2}
-                    className="mt-2 w-full py-3 rounded-full bg-amber-500 text-stone-900 font-bold text-sm uppercase tracking-wide disabled:opacity-40 hover:bg-amber-400 transition-colors"
-                  >
-                    {saving ? 'Saving...' : 'Generate Coffee Pairs ☕'}
-                  </button>
-                </>
-              )}
+              <div className={!user ? 'pointer-events-none opacity-50' : ''}>
+                <FileUpload onParsed={handleParsed} onError={setError} fileName={fileName} setFileName={setFileName} />
+              </div>
+              {participants.length > 0 && <ParticipantList participants={participants} />}
+              {error && <p className="text-red-400 text-sm">{error}</p>}
+              <button
+                onClick={handleGenerate}
+                disabled={saving || participants.length < 2 || !user}
+                className="mt-2 w-full py-3 rounded-full bg-amber-500 text-stone-900 font-bold text-sm uppercase tracking-wide disabled:opacity-40 hover:bg-amber-400 transition-colors"
+              >
+                {saving ? 'Saving...' : !user ? 'Sign in to Generate Pairs' : 'Generate Coffee Pairs ☕'}
+              </button>
             </div>
           )}
-
 
           {/* This Round Tab */}
           {activeTab === 'round' && (
